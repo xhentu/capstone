@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome, {{ student_profile.user.username }}</h1>
+    
+    <!-- Class Information -->
+    {% if class_instance %}
+    <section class="class-info">
+        <h2>Class Information</h2>
+        <p><strong>Class:</strong> {{ class_instance.name }} ({{ class_instance.grade.name }})</p>
+        <p><strong>Academic Year:</strong> {{ class_instance.academic_year.year }}</p>
+    </section>
+    {% else %}
+    <p>You are not enrolled in any class for the current academic year.</p>
+    {% endif %}
+    
+    <!-- Schedule -->
+    {% if schedule %}
+    <section class="schedule">
+        <h2>Schedule</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Time</th>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in schedule %}
+                <tr>
+                    <td>{{ entry.day_of_week }}</td>
+                    <td>{{ entry.section }}</td>
+                    <td>{{ entry.subject.name }}</td>
+                    <td>{{ entry.subject.scheduled_sections.first.teacher.user.username }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% else %}
+    <p>No schedule available for your class.</p>
+    {% endif %}
+    
+    <!-- Exam Grades -->
+    {% if exam_grades %}
+    <section class="exam-grades">
+        <h2>Exam Grades</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Exam</th>
+                    <th>Subject</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam_grade in exam_grades %}
+                <tr>
+                    <td>{{ exam_grade.exam.name }}</td>
+                    <td>{{ exam_grade.subject.name }}</td>
+                    <td>{{ exam_grade.grade }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% else %}
+    <p>No exam grades available for the current academic year.</p>
+    {% endif %}
+    
+    <!-- Attendance Records -->
+    {% if attendance_records %}
+    <section class="attendance">
+        <h2>Attendance Records</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance_records %}
+                <tr>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.subject.name }}</td>
+                    <td>{{ record.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% else %}
+    <p>No attendance records available.</p>
+    {% endif %}
+    
+    <!-- Notifications -->
+    {% if notifications %}
+    <section class="notifications">
+        <h2>Notifications</h2>
+        <ul>
+            {% for notification in notifications %}
+            <li>
+                <strong>{{ notification.title }}</strong><br>
+                <p>{{ notification.message }}</p>
+                <small>Posted on: {{ notification.created_at|date:"Y-m-d" }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% else %}
+    <p>No notifications at this time.</p>
+    {% endif %}
+</div>
+{% endblock %}

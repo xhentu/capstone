@@ -1,139 +1,90 @@
 from django.contrib import admin
-from .models import (
-    AcademicYear,
-    Class,
-    Subject,
-    TeacherAssignment,
-    Schedule,
-    StudentEnrollment,
-    Attendance,
-    Exam,
-    ExamGrade,
-    Fees,
-    Grade,
-    Notification,  # Include the Notification model in admin
-    TeacherDailyAttendance,
-    StaffDailyAttendance,
-)
+from .models import AcademicYear, Grade, Class, Subject, Schedule, TeacherAssignment, StudentEnrollment, Attendance, Exam, ExamGrade, Fees, Notification, TeacherDailyAttendance, StaffDailyAttendance
 
-@admin.register(AcademicYear)
 class AcademicYearAdmin(admin.ModelAdmin):
-    list_display = ('year', 'is_active')
-    search_fields = ('year',)
-    list_filter = ('is_active',)
+    list_display = ['year', 'is_active']
+    search_fields = ['year']
 
-@admin.register(Grade)
 class GradeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
+    list_display = ['name']
+    search_fields = ['name']
 
-@admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):
-    list_display = ('name', 'grade', 'academic_year', 'is_active')
-    list_filter = ('grade', 'academic_year', 'is_active')
-    search_fields = ('name', 'grade__name', 'academic_year__year')
+    list_display = ['name', 'grade', 'academic_year', 'is_active']
+    search_fields = ['name']
+    list_filter = ['grade', 'academic_year', 'is_active']
 
-@admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'grade', 'academic_year', 'is_active')
-    list_filter = ('grade', 'academic_year', 'is_active')
-    search_fields = ('name', 'grade__name', 'academic_year__year')
-    filter_horizontal = ('classes',)
+    list_display = ['name', 'grade', 'academic_year', 'is_active']
+    search_fields = ['name']
+    list_filter = ['grade', 'academic_year', 'is_active']
 
-    def save_model(self, request, obj, form, change):
-        # Save the subject instance first
-        obj.save()
-        
-        # Now handle the many-to-many relationship
-        classes = form.cleaned_data.get('classes', [])
-        obj.classes.set(classes)
-
-@admin.register(TeacherAssignment)
-class TeacherAssignmentAdmin(admin.ModelAdmin):
-    list_display = ('teacher', 'subject', 'class_assigned', 'academic_year')
-    list_filter = ('academic_year', 'class_assigned__is_active')
-    search_fields = ('teacher__user__username', 'subject__name', 'class_assigned__name', 'academic_year__year')
-
-@admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'class_instance', 'get_academic_year', 'day_of_week', 'section')
-    list_filter = ('class_instance__academic_year', 'day_of_week', 'section')  # Added section filter for time slots
-    search_fields = ('subject__name', 'class_instance__name', 'class_instance__academic_year__year')
+    list_display = ['class_instance', 'section', 'subject', 'day_of_week']
+    search_fields = ['class_instance__name', 'subject__name']
+    list_filter = ['day_of_week']
 
-    def get_academic_year(self, obj):
-        return obj.class_instance.academic_year.year
-    get_academic_year.short_description = 'Academic Year'
+class TeacherAssignmentAdmin(admin.ModelAdmin):
+    list_display = ['teacher', 'subject', 'class_assigned', 'academic_year']
+    search_fields = ['teacher__user__username', 'subject__name']
+    list_filter = ['academic_year']
 
-@admin.register(StudentEnrollment)
 class StudentEnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('student', 'class_assigned', 'academic_year')
-    list_filter = ('academic_year', 'class_assigned__is_active')
-    search_fields = ('student__user__username', 'class_assigned__name', 'academic_year__year')
+    list_display = ['student', 'class_assigned', 'academic_year']
+    search_fields = ['student__user__username']
+    list_filter = ['academic_year']
 
-@admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
-    list_display = ('student', 'subject', 'date', 'status', 'academic_year')
-    list_filter = ('academic_year', 'status')
-    search_fields = ('student__user__username', 'subject__name', 'academic_year__year')
+    list_display = ['student', 'subject', 'date', 'status', 'academic_year']
+    search_fields = ['student__user__username', 'subject__name']
+    list_filter = ['date', 'status']
 
-@admin.register(Exam)
 class ExamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'subject', 'class_assigned', 'exam_date', 'academic_year')
-    list_filter = ('academic_year', 'exam_date', 'class_assigned__is_active')
-    search_fields = ('name', 'subject__name', 'class_assigned__name', 'academic_year__year')
+    list_display = ['name', 'subject', 'class_assigned', 'exam_date', 'academic_year']
+    search_fields = ['name', 'subject__name']
+    list_filter = ['exam_date', 'academic_year']
 
-@admin.register(ExamGrade)
 class ExamGradeAdmin(admin.ModelAdmin):
-    list_display = ('student', 'exam', 'grade', 'academic_year')
-    list_filter = ('academic_year', 'grade')
-    search_fields = ('student__user__username', 'exam__name', 'academic_year__year')
+    list_display = ['student', 'exam', 'subject', 'grade', 'academic_year']
+    search_fields = ['student__user__username', 'exam__name', 'subject__name']
+    list_filter = ['academic_year']
 
-@admin.register(Fees)
 class FeesAdmin(admin.ModelAdmin):
-    list_display = ('student', 'amount_due', 'amount_paid', 'due_date', 'academic_year', 'fee_status')
-    list_filter = ('academic_year', 'due_date', 'amount_paid')
-    search_fields = ('student__user__username', 'academic_year__year')
+    list_display = ['student', 'amount_due', 'amount_paid', 'due_date', 'fee_status', 'academic_year']
+    search_fields = ['student__user__username']
+    list_filter = ['academic_year']
 
-    @admin.display(description='Fee Status')
     def fee_status(self, obj):
         return obj.fee_status
+    fee_status.admin_order_field = 'fee_status'
 
-# Adding Notification to admin
-@admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('title', 'scope', 'sender', 'created_at', 'is_active')
-    list_filter = ('scope', 'is_active', 'created_at')
-    search_fields = ('title', 'sender__user__username')
+    list_display = ['title', 'sender', 'scope', 'is_active', 'created_at']
+    search_fields = ['title', 'message']
+    list_filter = ['scope', 'is_active']
 
-    def save_model(self, request, obj, form, change):
-        # Ensure proper validation and saving for the scope targeting
-        obj.save()
-
-        if obj.scope == 'Class':
-            classes = form.cleaned_data.get('class_target', [])
-            obj.class_target.set(classes)
-
-        if obj.scope == 'Grade':
-            grades = form.cleaned_data.get('grade_target', [])
-            obj.grade_target.set(grades)
-
-@admin.register(TeacherDailyAttendance)
 class TeacherDailyAttendanceAdmin(admin.ModelAdmin):
-    list_display = ('teacher', 'date', 'status')
-    list_filter = ('status', 'date')
-    search_fields = ('teacher__user__username',)
-    date_hierarchy = 'date'
+    list_display = ['date', 'teacher', 'status']
+    search_fields = ['teacher__user__username']
+    list_filter = ['date', 'status']
 
-    def get_ordering(self, request):
-        return ['-date']
-
-@admin.register(StaffDailyAttendance)
 class StaffDailyAttendanceAdmin(admin.ModelAdmin):
-    list_display = ('staff', 'date', 'status')
-    list_filter = ('status', 'date')
-    search_fields = ('staff__user__username',)
-    date_hierarchy = 'date'
+    list_display = ['date', 'staff', 'status']
+    search_fields = ['staff__user__username']
+    list_filter = ['date', 'status']
 
-    def get_ordering(self, request):
-        return ['-date']
-    
+# Register models
+admin.site.register(AcademicYear, AcademicYearAdmin)
+admin.site.register(Grade, GradeAdmin)
+admin.site.register(Class, ClassAdmin)
+admin.site.register(Subject, SubjectAdmin)
+admin.site.register(Schedule, ScheduleAdmin)
+admin.site.register(TeacherAssignment, TeacherAssignmentAdmin)
+admin.site.register(StudentEnrollment, StudentEnrollmentAdmin)
+admin.site.register(Attendance, AttendanceAdmin)
+admin.site.register(Exam, ExamAdmin)
+admin.site.register(ExamGrade, ExamGradeAdmin)
+admin.site.register(Fees, FeesAdmin)
+admin.site.register(Notification, NotificationAdmin)
+admin.site.register(TeacherDailyAttendance, TeacherDailyAttendanceAdmin)
+admin.site.register(StaffDailyAttendance, StaffDailyAttendanceAdmin)

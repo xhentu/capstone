@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
-
 class AcademicYear(models.Model):
     year = models.CharField(max_length=20, blank=True, null=True)  # Example: "2024-2025"
     is_active = models.BooleanField(default=True, blank=True, null=True)
