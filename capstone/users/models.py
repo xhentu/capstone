@@ -23,6 +23,7 @@ class CustomUser(AbstractUser):
         ('other', 'Other'),
     ]
 
+    USERNAME_FIELD = 'username'
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     nrc_no = models.CharField(max_length=50, blank=True, null=True)  # NRC/ID number
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)

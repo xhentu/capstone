@@ -8,6 +8,11 @@ from .models import CustomUser, AdminProfile, StaffProfile, TeacherProfile, Stud
 def create_profile_and_assign_group(sender, instance, created, **kwargs):
     if created:
         print(f"User {instance.username} created with role {instance.role}")
+
+        # Checking password hash
+        if not instance.password.startswith('pbkdf2_'):  # Django hashed passwords start with 'pbkdf2_'
+            instance.set_password(instance.password)
+            instance.save(update_fields=["password"])
         
         # Create profile based on role
         if instance.role == 'admin':

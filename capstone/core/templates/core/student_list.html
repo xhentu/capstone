@@ -1,6 +1,5 @@
 <!-- core/templates/core/student_list.html -->
 {% extends 'core/layout.html' %}
-{% static %}
 
 {% block title %}Student List{% endblock %}
 
@@ -8,7 +7,7 @@
     <h1>Student List</h1>
     <ul>
         {% for student in students %}
-            <li>{{ student.user.username }}</li>
+            <li>{{ student.username }}</li>
         {% empty %}
             <li>No students found.</li>
         {% endfor %}
